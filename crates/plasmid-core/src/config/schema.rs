@@ -4,21 +4,21 @@ use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, Eq)]
 pub struct PlasmidConfig {
-    ignore: Vec<String>,
-    packages: Vec<PackageSpec>,
-    profiles: HashMap<String, Profile>,
+    pub ignore: Vec<String>,
+    pub packages: Vec<PackageSpec>,
+    pub profiles: HashMap<String, Profile>,
 }
 
 #[derive(Debug, Clone, Deserialize, Serialize, Default, PartialEq, Eq)]
-struct PackageSpec {
-    name: String,
-    manager: Option<String>,
+pub struct PackageSpec {
+    pub name: String,
+    pub manager: Option<String>,
 }
 
 #[derive(Debug, Clone, Deserialize, Serialize, Default, PartialEq, Eq)]
-struct Profile {
-    packages: Vec<PackageSpec>,
-    variables: HashMap<String, String>,
+pub struct Profile {
+    pub packages: Vec<PackageSpec>,
+    pub variables: HashMap<String, String>,
 }
 
 impl Default for PlasmidConfig {
