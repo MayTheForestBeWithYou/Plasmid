@@ -1,0 +1,16 @@
+[package]
+name = "plasmid-cli"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+plasmid-core = { workspace = true }
+plasmid-fs = { workspace = true }
+plasmid-pkg = { workspace = true }
+
+anyhow = { workspace = true }
+clap = { workspace = true }
+console = { workspace = true }
+
+[lints]
+workspace = true
