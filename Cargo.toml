@@ -16,6 +16,7 @@ clap = { version = "4.5.60", features = ["derive"] }
 serde = { version = "1.0.228", features = ["derive"] }
 toml = "0.9.8"
 console = "0.16.2"
+walkdir = "2.5.0"
 
 # Dev dependencies
 tempfile = "3.25.0"
