@@ -3,7 +3,7 @@ use std::{
     path::{Path, PathBuf},
 };
 
-use crate::error::FileSystemError;
+use crate::filesystem::error::FileSystemError;
 
 /// Abstraction layer for filesystem operations.
 pub trait FileSystemOps {

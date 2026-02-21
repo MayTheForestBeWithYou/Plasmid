@@ -1,8 +1,8 @@
 use std::fs::File;
 
-use plasmid_fs::{
+use plasmid_fs::filesystem::{
     error::FileSystemError,
-    filesystem::{FileSystemOps, ProdFileSystem},
+    operation::{FileSystemOps, ProdFileSystem},
 };
 use tempfile::TempDir;
 
