@@ -285,6 +285,7 @@ dependencies = [
 name = "plasmid-core"
 version = "0.1.0"
 dependencies = [
+ "plasmid-fs",
  "serde",
  "thiserror",
  "toml",

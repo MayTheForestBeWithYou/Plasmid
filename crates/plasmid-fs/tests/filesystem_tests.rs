@@ -15,6 +15,8 @@ fn test_exists() -> std::io::Result<()> {
     let fs = ProdFileSystem;
 
     assert!(fs.exists(&file_path));
+    assert!(fs.is_file(&file_path));
+    assert!(!fs.is_dir(&file_path));
     assert!(!fs.exists(dir.path().join("missing").as_path()));
 
     Ok(())

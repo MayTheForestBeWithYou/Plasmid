@@ -13,6 +13,12 @@ pub trait FileSystemOps {
     /// Determines whether a path is a symbolic link.
     fn is_symlink(&self, path: &Path) -> bool;
 
+    /// Determines whether a path is a file.
+    fn is_file(&self, path: &Path) -> bool;
+
+    /// Determines whether a path is a directory;
+    fn is_dir(&self, path: &Path) -> bool;
+
     /// Reads the target of a symbolic link.
     ///
     /// # Errors
@@ -40,6 +46,15 @@ impl FileSystemOps for ProdFileSystem {
     fn is_symlink(&self, path: &Path) -> bool {
         symlink_metadata(path).is_ok_and(|meta| meta.file_type().is_symlink())
     }
+
+    fn is_file(&self, path: &Path) -> bool {
+        path.is_file()
+    }
+
+    fn is_dir(&self, path: &Path) -> bool {
+        path.is_dir()
+    }
+
     fn read_link(&self, path: &Path) -> Result<PathBuf, FileSystemError> {
         fs::read_link(path).map_err(|e| FileSystemError::LinkError {
             path: path.to_path_buf(),
@@ -83,12 +98,16 @@ mod tests {
 
     pub enum MockEntry {
         File,
+        Dir,
         Symlink(PathBuf),
     }
 
     impl MockFileSystem {
         pub fn insert_file(&mut self, path: PathBuf) {
             self.files.insert(path, MockEntry::File);
+        }
+        pub fn insert_dir(&mut self, path: PathBuf) {
+            self.files.insert(path, MockEntry::Dir);
         }
         pub fn insert_symlink(&mut self, link: PathBuf, target: PathBuf) {
             self.files.insert(link, MockEntry::Symlink(target));
@@ -102,6 +121,15 @@ mod tests {
         fn is_symlink(&self, path: &std::path::Path) -> bool {
             matches!(self.files.get(path), Some(MockEntry::Symlink(_)))
         }
+
+        fn is_file(&self, path: &Path) -> bool {
+            matches!(self.files.get(path), Some(MockEntry::File))
+        }
+
+        fn is_dir(&self, path: &Path) -> bool {
+            matches!(self.files.get(path), Some(MockEntry::Dir))
+        }
+
         fn read_link(&self, path: &std::path::Path) -> Result<PathBuf, FileSystemError> {
             match self.files.get(path) {
                 Some(MockEntry::Symlink(target)) => Ok(target.clone()),
@@ -137,6 +165,32 @@ mod tests {
 
         assert!(fs.is_symlink(&link));
         assert!(!fs.is_symlink(PathBuf::from("/notalink").as_path()));
+    }
+
+    #[test]
+    fn test_mock_is_file() {
+        let mut fs = MockFileSystem::default();
+        let file = PathBuf::from("/tmp/file");
+        let dir = PathBuf::from("/tmp/dir/");
+
+        fs.insert_file(file.clone());
+        fs.insert_dir(dir.clone());
+
+        assert!(fs.is_file(&file));
+        assert!(!fs.is_file(&dir));
+    }
+
+    #[test]
+    fn test_mock_is_dir() {
+        let mut fs = MockFileSystem::default();
+        let file = PathBuf::from("/tmp/file");
+        let dir = PathBuf::from("/tmp/dir/");
+
+        fs.insert_file(file.clone());
+        fs.insert_dir(dir.clone());
+
+        assert!(fs.is_dir(&dir));
+        assert!(!fs.is_dir(&file));
     }
 
     #[test]
