@@ -1,4 +1,4 @@
-use crate::{config::schema::PlasmidConfig, error::ConfigError};
+use crate::config::{error::ConfigError, schema::PlasmidConfig};
 use std::{fs::read_to_string, path::Path};
 
 /// Load the Plasmid config.
@@ -51,46 +51,21 @@ impl ConfigReader for FileConfigReader {
 
 #[cfg(test)]
 mod tests {
+    use crate::config::mock::MockConfigReader;
+
     use super::*;
-    use core::panic;
-    use std::{collections::HashMap, io, path::PathBuf};
-
-    pub struct MockConfigReader {
-        pub data: HashMap<PathBuf, String>,
-    }
-
-    impl MockConfigReader {
-        fn new() -> Self {
-            Self {
-                data: HashMap::new(),
-            }
-        }
-
-        fn with_file(mut self, path: &str, content: &str) -> Self {
-            self.data.insert(PathBuf::from(path), content.to_string());
-            self
-        }
-    }
-
-    impl ConfigReader for MockConfigReader {
-        fn read_file(&self, path: &Path) -> Result<Option<String>, ConfigError> {
-            self.data
-                .get(path)
-                .map_or(Ok(None), |content| Ok(Some(content.clone())))
-        }
-    }
+    use std::{error::Error, io};
 
     #[test]
-    fn test_load_config_returns_default_config() {
-        let reader = MockConfigReader::new();
-        let Ok(config) = load_config(Path::new("nonexistent"), &reader) else {
-            panic!("Should return default config")
-        };
+    fn test_load_config_returns_default_config() -> Result<(), Box<dyn Error>> {
+        let reader = MockConfigReader::default();
+        let config = load_config(Path::new("nonexistent"), &reader)?;
         assert_eq!(PlasmidConfig::default(), config);
+        Ok(())
     }
 
     #[test]
-    fn test_load_config_returns_valid_config_from_toml() -> io::Result<()> {
+    fn test_load_config_returns_valid_config_from_toml() -> Result<(), Box<dyn Error>> {
         let toml_content = r#"
         # Top‑level ignore list
         ignore = [
@@ -120,7 +95,7 @@ mod tests {
         "#;
 
         let path = Path::new("plasmid.toml");
-        let reader = MockConfigReader::new().with_file("plasmid.toml", toml_content);
+        let reader = MockConfigReader::default().with_file("plasmid.toml", toml_content);
 
         let result = load_config(path, &reader);
         assert!(
@@ -129,9 +104,7 @@ mod tests {
             result.err()
         );
 
-        let Ok(config) = result else {
-            panic!("Should return valid config")
-        };
+        let config = result?;
 
         assert!(config.ignore.contains(&"target".to_string()));
         assert_eq!(config.packages[0].name, "serde");
@@ -151,7 +124,7 @@ mod tests {
 
     #[test]
     fn test_load_config_returns_error() {
-        let reader = MockConfigReader::new().with_file("test.toml", "");
+        let reader = MockConfigReader::default().with_file("test.toml", "");
         let result = load_config(Path::new("test.toml"), &reader);
         assert!(result.is_err());
 

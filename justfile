@@ -49,7 +49,6 @@ clean:
     cargo clean
 
 # Run the Plasmid binary with the given arguments.
-# Example: `just run -- feature start my-feature`
-run ARGS='':
-    @echo "▶️  Running plasmid {{ARGS}}..."
-    cargo run -p plasmid-cli -- {{ARGS}}
+run *args:
+    @echo "▶️  Running plasmid {{args}}..."
+    cargo run -p plasmid-cli -- {{args}}

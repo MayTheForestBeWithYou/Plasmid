@@ -1,2 +1,3 @@
+#![forbid(unsafe_code)]
+
 pub mod filesystem;
-pub mod walker;
