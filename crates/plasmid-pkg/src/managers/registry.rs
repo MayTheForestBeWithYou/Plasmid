@@ -68,3 +68,88 @@ impl ManagerRegistry {
         None
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use std::{error::Error, ptr::eq, sync::Arc};
+
+    use crate::{
+        managers::{kind::ManagerKind, registry::ManagerRegistry},
+        runner::mock::MockCommandRunner,
+    };
+
+    #[test]
+    fn test_resolve_apt() -> Result<(), Box<dyn Error>> {
+        let mock = MockCommandRunner::builder()
+            .expect("apt --version")
+            .status(0)
+            .finish()
+            .build();
+        let runner = Arc::new(mock);
+        let registry = ManagerRegistry::new(runner);
+
+        let resolved = registry
+            .resolve(Some("apt"))
+            .ok_or("resolve returned None")?;
+
+        let stored = registry
+            .managers
+            .get(&ManagerKind::Apt)
+            .map(AsRef::as_ref)
+            .ok_or("manager not found in registry")?;
+
+        assert!(eq(resolved, stored));
+
+        Ok(())
+    }
+
+    #[test]
+    fn test_resolve_brew() -> Result<(), Box<dyn Error>> {
+        let mock = MockCommandRunner::builder()
+            .expect("brew --version")
+            .status(0)
+            .finish()
+            .build();
+        let runner = Arc::new(mock);
+        let registry = ManagerRegistry::new(runner);
+
+        let resolved = registry
+            .resolve(Some("brew"))
+            .ok_or("resolve returned None")?;
+
+        let stored = registry
+            .managers
+            .get(&ManagerKind::Brew)
+            .map(AsRef::as_ref)
+            .ok_or("manager not found in registry")?;
+
+        assert!(eq(resolved, stored));
+
+        Ok(())
+    }
+
+    #[test]
+    fn test_resolve_winget() -> Result<(), Box<dyn Error>> {
+        let mock = MockCommandRunner::builder()
+            .expect("winget --version")
+            .status(0)
+            .finish()
+            .build();
+        let runner = Arc::new(mock);
+        let registry = ManagerRegistry::new(runner);
+
+        let resolved = registry
+            .resolve(Some("winget"))
+            .ok_or("resolve returned None")?;
+
+        let stored = registry
+            .managers
+            .get(&ManagerKind::Winget)
+            .map(AsRef::as_ref)
+            .ok_or("manager not found in registry")?;
+
+        assert!(eq(resolved, stored));
+
+        Ok(())
+    }
+}
