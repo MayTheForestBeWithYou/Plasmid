@@ -10,7 +10,11 @@ pub trait PackageManager<R: CommandRunner> {
     fn runner(&self) -> &R;
 
     /// Checks if the package manager binary exists in PATH
-    fn available(&self) -> bool;
+    ///
+    /// # Errors
+    /// This method returns an error if:
+    /// - The proces fails exucting the command
+    fn available(&self) -> Result<bool, PackageManagerError>;
 
     /// Installs the package
     ///
