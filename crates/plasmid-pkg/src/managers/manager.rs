@@ -14,21 +14,28 @@ pub trait PackageManager {
     /// # Errors
     /// This method returns an error if:
     /// - The proces fails exucting the command
-    fn available(&self) -> Result<bool, PackageManagerError>;
+    fn is_available(&self) -> Result<bool, PackageManagerError>;
+
+    /// Checks if the package is available in the package manager
+    ///
+    /// # Errors
+    /// This method returns an error if:
+    /// - The process fails executing the command
+    fn package_available(&self, package: &str) -> Result<bool, PackageManagerError>;
 
     /// Installs the package
     ///
     /// # Errors
     /// This methods returns an error if:
     /// - The process fails executing the command
-    fn install(&self, package: &str) -> Result<String, PackageManagerError>;
+    fn install_package(&self, package: &str) -> Result<String, PackageManagerError>;
 
     /// Checks if a specific package is currently installed
     ///
     /// # Errors
     /// This method returns an error if:
     /// - The process fails executing the command
-    fn is_installed(&self, package: &str) -> Result<bool, PackageManagerError>;
+    fn is_package_installed(&self, package: &str) -> Result<bool, PackageManagerError>;
 
     /// Helper to run shell commands cleanly
     ///

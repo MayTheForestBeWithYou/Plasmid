@@ -59,7 +59,7 @@ impl ManagerRegistry {
         #[cfg(target_os = "windows")]
         {
             if let Some(m) = self.managers.get(&ManagerKind::Winget)
-                && m.available().is_ok()
+                && m.is_available().is_ok()
             {
                 return Some(m.as_ref());
             }
