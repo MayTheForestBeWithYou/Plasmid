@@ -5,19 +5,19 @@ use crate::{
     runner::commandrunner::CommandRunner,
 };
 
-pub struct WingetManager {
+pub struct BrewManager {
     pub runner: Arc<dyn CommandRunner>,
 }
 
-impl WingetManager {
+impl BrewManager {
     pub fn new(runner: Arc<dyn CommandRunner>) -> Self {
         Self { runner }
     }
 }
 
-impl PackageManager for WingetManager {
+impl PackageManager for BrewManager {
     fn name(&self) -> &'static str {
-        "winget"
+        "brew"
     }
 
     fn runner(&self) -> &dyn CommandRunner {
@@ -59,14 +59,14 @@ mod tests {
     #[test]
     fn test_available() -> Result<(), Box<dyn Error>> {
         let mock = MockCommandRunner::builder()
-            .expect("winget --version")
+            .expect("brew --version")
             .stdout("v1.0.0")
             .status(0)
             .finish()
             .build();
 
-        let winget = WingetManager::new(Arc::new(mock.clone()));
-        let result = winget.available()?;
+        let brew = BrewManager::new(Arc::new(mock.clone()));
+        let result = brew.available()?;
         assert!(result);
 
         mock.assert_empty()?;
@@ -76,13 +76,13 @@ mod tests {
     #[test]
     fn test_unavailable() -> Result<(), Box<dyn Error>> {
         let mock = MockCommandRunner::builder()
-            .expect("winget --version")
+            .expect("brew --version")
             .status(1)
             .finish()
             .build();
 
-        let winget = WingetManager::new(Arc::new(mock.clone()));
-        let result = winget.available()?;
+        let brew = BrewManager::new(Arc::new(mock.clone()));
+        let result = brew.available()?;
         assert!(!result);
 
         mock.assert_empty()?;
@@ -92,14 +92,14 @@ mod tests {
     #[test]
     fn test_install() -> Result<(), Box<dyn Error>> {
         let mock = MockCommandRunner::builder()
-            .expect("winget install package")
+            .expect("brew install package")
             .stdout("Successfully installed package")
             .status(0)
             .finish()
             .build();
 
-        let winget = WingetManager::new(Arc::new(mock.clone()));
-        let result = winget.install("package");
+        let brew = BrewManager::new(Arc::new(mock.clone()));
+        let result = brew.install("package");
         assert!(result.is_ok());
 
         mock.assert_empty()?;
@@ -109,13 +109,13 @@ mod tests {
     #[test]
     fn test_install_failed() -> Result<(), Box<dyn Error>> {
         let mock = MockCommandRunner::builder()
-            .expect("winget install package")
+            .expect("brew install package")
             .status(1)
             .finish()
             .build();
 
-        let winget = WingetManager::new(Arc::new(mock.clone()));
-        let result = winget.install("package");
+        let brew = BrewManager::new(Arc::new(mock.clone()));
+        let result = brew.install("package");
         assert!(result.is_err());
         assert!(matches!(
             result,
@@ -129,14 +129,14 @@ mod tests {
     #[test]
     fn test_is_installed() -> Result<(), Box<dyn Error>> {
         let mock = MockCommandRunner::builder()
-            .expect("winget list package")
+            .expect("brew list package")
             .stdout("package v1.0.0")
             .status(0)
             .finish()
             .build();
 
-        let winget = WingetManager::new(Arc::new(mock.clone()));
-        let result = winget.is_installed("package")?;
+        let brew = BrewManager::new(Arc::new(mock.clone()));
+        let result = brew.is_installed("package")?;
         assert!(result);
 
         mock.assert_empty()?;
@@ -146,14 +146,14 @@ mod tests {
     #[test]
     fn test_is_not_installed() -> Result<(), Box<dyn Error>> {
         let mock = MockCommandRunner::builder()
-            .expect("winget list package")
+            .expect("brew list package")
             .stdout("package v1.0.0")
             .status(1)
             .finish()
             .build();
 
-        let winget = WingetManager::new(Arc::new(mock.clone()));
-        let result = winget.is_installed("package")?;
+        let brew = BrewManager::new(Arc::new(mock.clone()));
+        let result = brew.is_installed("package")?;
         assert!(!result);
 
         mock.assert_empty()?;

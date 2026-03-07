@@ -2,12 +2,12 @@ use std::process::Command;
 
 use crate::{error::PackageManagerError, runner::commandrunner::CommandRunner};
 
-pub trait PackageManager<R: CommandRunner> {
+pub trait PackageManager {
     /// The unqiue name
     fn name(&self) -> &'static str;
 
     /// Command runner injection
-    fn runner(&self) -> &R;
+    fn runner(&self) -> &dyn CommandRunner;
 
     /// Checks if the package manager binary exists in PATH
     ///
