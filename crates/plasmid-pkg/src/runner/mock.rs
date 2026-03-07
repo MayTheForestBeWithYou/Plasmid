@@ -1,27 +1,11 @@
+use crate::{error::PackageManagerError, runner::commandrunner::CommandRunner};
 use std::io::Result as ioResult;
-use std::iter::once;
-use std::os::windows::process::ExitStatusExt;
-use std::process::{Command, ExitStatus, Output};
-use std::sync::{Arc, Mutex};
-
-use crate::error::PackageManagerError;
-
-pub trait CommandRunner {
-    /// Run command in the specified commandrunner
-    ///
-    /// # Errors
-    /// This method returns an error if:
-    /// - The underlying commandrunner fails to execute the command
-    fn run(&self, cmd: &mut Command) -> ioResult<Output>;
-}
-
-pub struct RealCommandRunner;
-
-impl CommandRunner for RealCommandRunner {
-    fn run(&self, cmd: &mut Command) -> ioResult<Output> {
-        cmd.output()
-    }
-}
+use std::{
+    iter::once,
+    os::windows::process::ExitStatusExt,
+    process::{Command, ExitStatus, Output},
+    sync::{Arc, Mutex},
+};
 
 #[derive(Clone)]
 pub struct ExpectedCommand {

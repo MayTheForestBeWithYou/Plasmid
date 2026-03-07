@@ -1,6 +1,6 @@
 use std::process::Command;
 
-use crate::{error::PackageManagerError, runner::CommandRunner};
+use crate::{error::PackageManagerError, runner::commandrunner::CommandRunner};
 
 pub trait PackageManager<R: CommandRunner> {
     /// The unqiue name

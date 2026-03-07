@@ -1,6 +1,9 @@
 use std::process::Command;
 
-use crate::{error::PackageManagerError, manager::PackageManager, runner::CommandRunner};
+use crate::{
+    error::PackageManagerError, managers::manager::PackageManager,
+    runner::commandrunner::CommandRunner,
+};
 
 pub struct WingetPackageManager<R: CommandRunner> {
     pub runner: R,
@@ -40,11 +43,9 @@ impl<R: CommandRunner> PackageManager<R> for WingetPackageManager<R> {
 
 #[cfg(test)]
 mod tests {
-    use std::error::Error;
-
-    use crate::runner::MockCommandRunner;
-
     use super::*;
+    use crate::runner::mock::MockCommandRunner;
+    use std::error::Error;
 
     #[test]
     fn test_available() -> Result<(), Box<dyn Error>> {
