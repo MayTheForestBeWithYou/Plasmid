@@ -53,7 +53,7 @@ impl Operation {
     fn normalize_path_to_os(path: &Path) -> String {
         let mut out = String::new();
         for (i, comp) in path.components().enumerate() {
-            if i > 0 {
+            if i > 1 {
                 out.push(MAIN_SEPARATOR);
             }
             out.push_str(&comp.as_os_str().to_string_lossy());
